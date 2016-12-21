@@ -1,0 +1,159 @@
+/* Mon code */
+
+#welcome-page, .parallax1 {
+	height: 100%;
+    width: 100%;
+}
+
+#welcome-page {
+	position: absolute;
+	top: -10%;
+	left: -10%;
+}
+
+.parallax1 {
+	display: inline-block;
+	position: absolute;
+    transition: ease 0.1s;
+}
+
+.parallax1 div {
+	width: 120%;
+	height: 120%;
+	background-size: cover;
+    -webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    transition: all 1s;
+}
+
+#overlay {
+    background-image: url(../img/overlay.png);
+    position: absolute;
+    padding: 0px;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+    top: 0;
+    left: 0;
+}
+
+#box-container {
+    position: absolute;
+    width: 800px;
+    left: calc(50% - 400px);
+    top: calc(50% + -255px);
+}
+
+#box-container h2 {
+	color: white;
+    text-align: center;
+    font-size: 100px;
+}
+
+.button {
+    cursor: pointer;
+    color: white;
+    width: 220px;
+    height: 20px;
+    z-index: 999;
+    overflow: hidden;
+    border: 3px solid white;
+    left: calc(50% - 133px);
+    margin-top: 120px;
+    padding: 23px 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    position: absolute !important;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.button p {
+	display: inline-block;
+	z-index: 999;
+    width: 208px;
+    position: absolute;
+    padding: 0;
+    font-size: 16px;
+    left: calc(50% - 93px);
+    font-family: Arial;
+    line-height: 1.4;
+}
+
+.button div {
+    z-index: -1;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+    width: 100%;
+    position: absolute;
+    padding: 0;
+    top: 50%;
+    left: 50%;
+    background: #fff;
+    opacity: 1;
+    height: 0;
+    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);
+    -moz-transform: translateX(-50%) translateY(-50%) rotate(45deg);
+    -ms-transform: translateX(-50%) translateY(-50%) rotate(45deg);
+    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+}
+
+.button:hover {
+    color: #424242;
+}
+
+.button:hover div {
+    height: 260% !important;
+    opacity: 1 !important;
+}
+
+.button.animate-0:hover div{
+	height: 20px !important;
+}
+
+.button.animate-0 {
+	height: 20px;
+    width: 260px;
+    padding: 0;
+    background: white;
+    margin-top: calc(50% - 203px);
+}
+
+.button div.animate-0 {
+	width: 90px;
+	height: 20px;
+    border: 3px solid white;
+    top: -3px;
+    left: 93px;
+    transform: translateX(0) translateY(0) rotate(0);
+}
+
+.button.animate-1{
+    width: 186px;
+    left: calc(50% - 103px);
+    overflow: visible;
+}
+
+.button.animate-2 {
+	width: 90px;
+}
+
+.button.animate-3 {
+
+	transform: translateX(0) translateY(0) rotate(-45deg);
+}
+
+.button div.animate-3 {
+	transform: translateX(-23px) translateY(73px) rotate(90deg);
+}
+
+.button.animate-4 {
+	left: calc(50% - 70px);
+}
+
+.button div.animate-4 {
+	transform: translateX(-61px) translateY(35px) rotate(90deg);
+}

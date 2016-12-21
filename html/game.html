@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Arachnea</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="../css/reset.css">
+		<link rel="stylesheet" type="text/css" href="../css/main_style.css">
+		<link rel="stylesheet" type="text/css" href="../css/game.css">
+	</head>
+
+	<body>
+		<header>
+	    	<a href="#" id="menu"><i class="material-icons">menu</i></a>
+				
+			<!-- Menu (Liste se situant dans la partie gauche) -->
+
+			<ul id="nav">
+				<li>
+					<a href="#scroll_container-1">Acceuil</a>
+				</li>
+				
+				<li>
+					<a href="#scroll_container-2">Biologie</a>
+				</li>
+				
+				<li>
+					<a href="#scroll_container-3">Nourriture</a>
+				</li>
+
+				<li>
+					<a href="#scroll_container-4">Galerie</a>
+				</li>
+			</ul>
+		</header>
+		<main>
+			<div class="scroll_container container row" id="scroll_container-1">
+				<canvas id="canvas">Si vous voyez ce message, c'est que votre navigateur n'est pas compatible avec la balise <\canvas><\/canvas></canvas>
+			</div>
+		</main>
+
+		<div id="nav-overlay"></div>
+		<!-- JavaScript en fin de Body pour un chargement plus rapide. -->
+
+		<script type="text/javascript" src="../js/jquery-2.2.0.js"></script>
+		<script type="text/javascript" src="../js/scroll.js"></script>
+		<script type="text/javascript" src="../js/class/character.js"></script>
+		<script type="text/javascript" src="../js/game.js"></script>
+	</body>
+</html>

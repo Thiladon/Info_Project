@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Arachnea</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="css/reset.css">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+	</head>
+
+	<body>
+
+		<!-- Class et Id relatives au js pour appliquer l'animation lors du déplacement de la souris -->
+		<!-- Effet appliqué : Parallax -->
+
+		<div id="welcome-page" class="parallax-container" data-jkit="[parallax:strength=2;axis=both]">
+			<div class="parallax parallax1">
+				<div></div>
+			</div>
+		</div>
+
+		<!-- Div overlay séparé de la div welcome page pour ne pas y appliquer l'effet parallax -->
+		<!-- Applique un effet de "grille" transparente sur l'image -->
+
+		<div id="overlay"></div>
+
+		<div id="box-container">
+			<h2>Arachnea.com</h2>
+
+			<div class="button">
+				<p>Aller vers le site</p>
+				<div></div>
+			</div>
+		</div>
+
+		<!-- JavaScript en fin de Body pour un chargement plus rapide. -->
+
+		<script type="text/javascript" src="js/jquery-2.2.0.js"></script>
+		<script type="text/javascript" src="js/script.js"></script>
+	</body>
+</html>
