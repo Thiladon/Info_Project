@@ -28,16 +28,23 @@ function player(url, x, y, direction) {
 	this.image.src = "sprites/" + url;
 }
 
-player.prototype.dessinerplayer = function() {
+player.prototype.dessinerplayer = function(ctx)
+{
 	var frame = 0; // Numéro de l'image à prendre pour l'animation
 	var decalageX = 0, decalageY = 0; // Décalage à appliquer à la position du player
-	if(this.etatAnimation >= DUREE_DEPLACEMENT) {
+	
+	if(this.etatAnimation >= DUREE_DEPLACEMENT)
+	{
 		// Si le déplacement a atteint ou dépassé le temps nécéssaire pour s'effectuer, on le termine
 		this.etatAnimation = -1;
-	} else if(this.etatAnimation >= 0) {
+	}
+	else if(this.etatAnimation >= 0)
+	{
 		// On calcule l'image (frame) de l'animation à afficher
 		frame = Math.floor(this.etatAnimation / DUREE_ANIMATION);
-		if(frame > 3) {
+		
+		if(frame > 3)
+		{
 			frame %= 4;
 		}
 		
