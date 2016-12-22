@@ -25,7 +25,7 @@ function player(url, x, y, direction) {
 		this.referenceDuPerso.largeur = this.width / 4;
 		this.referenceDuPerso.hauteur = this.height / 4;
 	}
-	this.image.src = "sprites/" + url;
+	this.image.src = url;
 }
 
 player.prototype.dessinerplayer = function(ctx)

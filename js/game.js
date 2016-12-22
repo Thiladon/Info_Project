@@ -26,9 +26,16 @@ window.onload = function()
 		console.error('canvas is :',canvas);
 	
 	var ctx = canvas.getContext("2d");
+
 	if(!ctx)
 		console.error('ctx is:',ctx);
 
+	test = new player('../img/game/player.png', 2, 2, DIRECTION.HAUT);
+	test.image.onload = function() {
+		test.dessinerplayer(level.ctx);
+	}
 	level = new map(ctx, '../img/game/map_sprite.png', level[0], 18, 18, 32, 32);
-	level.image.onload = function() { level.draw()}
+	level.image.onload = function() { 
+		level.draw()
+	}
 }

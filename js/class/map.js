@@ -22,7 +22,6 @@ map.prototype.draw = function()
 		{
 			spriteNum = this.map[y][x];
 
-			// ctx.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
 			this.ctx.drawImage(this.image,
 			spriteNum*this.tileWidth, 0,
 			this.tileWidth, this.tileHeight,
