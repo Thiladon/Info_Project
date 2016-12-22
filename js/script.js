@@ -20,20 +20,20 @@ $(document).on('mousemove ready resize', function(event){
 		var newPosY = (axeY - pos.top - (container.height()/2)) * strength * count * -1 - $(this).height()/2 + container.height()/2;
 		$(this).css({ 'top': newPosY + 'px' });
 
-		// console.log(
-		// 	"count : ", count,
-		// 	"\nstrength", strength,
-		// 	"\naxeX :", axeX,
-		// 	"\npos.left :", pos.left,
-		// 	"\ncontainer.width() :", container.width(),
-		// 	"\n$(this.width) :", $(this).width(),
-		// 	"\n$newPosX :", newPosX, "px",
-		// 	"\naxeY :", axeY,
-		// 	"\npos.top :", pos.top,
-		// 	"\ncontainer.height() :", container.height(),
-		// 	"\n$(this.height) :", $(this).height(),
-		// 	"\n$newPosY :", newPosY, "px"
-		// )
+		console.log(
+			"count : ", count,
+			"\nstrength", strength,
+			"\naxeX :", axeX,
+			"\npos.left :", pos.left,
+			"\ncontainer.width() :", container.width(),
+			"\n$(this.width) :", $(this).width(),
+			"\n$newPosX :", newPosX, "px",
+			"\naxeY :", axeY,
+			"\npos.top :", pos.top,
+			"\ncontainer.height() :", container.height(),
+			"\n$(this.height) :", $(this).height(),
+			"\n$newPosY :", newPosY, "px"
+		)
 
 		count++;
 	});
