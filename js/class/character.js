@@ -5,10 +5,14 @@ var DIRECTION = {
 	"HAUT"   : 3
 }
 
+var id = 0;
 var DUREE_ANIMATION = 4;
 var DUREE_DEPLACEMENT = 15;
 
-function player(url, x, y, direction) {
+function player(url,name, x, y, direction) {
+	id++;
+	this.id = id;
+	this.name = name;
 	this.x = x; // (en cases)
 	this.y = y; // (en cases)
 	this.direction = direction;
@@ -17,19 +21,21 @@ function player(url, x, y, direction) {
 	// Chargement de l'image dans l'attribut image
 	this.image = new Image();
 	this.image.referenceDuPerso = this;
+	this.image.src = url;
 	this.image.onload = function() {
 		if(!this.complete) 
 			throw "Erreur de chargement du sprite nommé \"" + url + "\".";
 		
 		// Taille du player
-		this.referenceDuPerso.largeur = this.width / 4;
+		this.referenceDuPerso.largeur = this.width / 6;
 		this.referenceDuPerso.hauteur = this.height / 4;
 	}
-	this.image.src = url;
 }
 
-player.prototype.dessinerplayer = function(ctx)
+player.prototype.drawCharacter = function(ctx)
 {
+	console.log(this);
+
 	var frame = 0; // Numéro de l'image à prendre pour l'animation
 	var decalageX = 0, decalageY = 0; // Décalage à appliquer à la position du player
 	
@@ -73,11 +79,11 @@ player.prototype.dessinerplayer = function(ctx)
 	
 	ctx.drawImage(
 		this.image, 
-		this.largeur * frame, this.direction * this.hauteur, // Point d'origine du rectangle source à prendre dans notre image
-		this.largeur, this.hauteur, // Taille du rectangle source (c'est la taille du player)
+		32, 32, // Point d'origine du rectangle source à prendre dans notre image
+		32, 32, // Taille du rectangle source (c'est la taille du player)
 		// Point de destination (dépend de la taille du player)
-		(this.x * 32) - (this.largeur / 2) + 16 + decalageX, (this.y * 32) - this.hauteur + 24 + decalageY,
-		this.largeur, this.hauteur // Taille du rectangle destination (c'est la taille du player)
+		32, 32,
+		32, 32 // Taille du rectangle destination (c'est la taille du player)
 	);
 }
 

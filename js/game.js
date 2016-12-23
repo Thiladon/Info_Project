@@ -30,11 +30,9 @@ window.onload = function()
 	if(!ctx)
 		console.error('ctx is:',ctx);
 
-	test = new player('../img/game/player.png', 2, 2, DIRECTION.HAUT);
-	test.image.onload = function() {
-		test.dessinerplayer(level.ctx);
-	}
 	level = new map(ctx, '../img/game/map_sprite.png', level[0], 18, 18, 32, 32);
+	thilladon = new player('../img/game/player.png', "Thilladon", 3, 2, DIRECTION.HAUT);
+	level.addCharacter(thilladon);
 	level.image.onload = function() { 
 		level.draw()
 	}

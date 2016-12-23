@@ -1,4 +1,8 @@
+var id = 0;
+
 function map(ctx, spritesheet, world, worldWidth, worldHeight, tileWidth, tileHeight) {
+	id++;
+	this.id = id;
 	this.ctx = ctx;
 	this.image = new Image();
 	this.image.src = spritesheet;
@@ -7,6 +11,11 @@ function map(ctx, spritesheet, world, worldWidth, worldHeight, tileWidth, tileHe
 	this.height = worldHeight;
 	this.tileWidth = tileWidth;
 	this.tileHeight = tileHeight;
+	this.characters = new Array();
+}
+
+map.prototype.addCharacter = function(chara) {
+	this.characters.push(chara);
 }
 
 map.prototype.draw = function()
@@ -29,6 +38,12 @@ map.prototype.draw = function()
 			this.tileWidth, this.tileHeight);
 
 		}
+	}
+
+	console.log(this.characters);
+
+	for(var i = 0; i < this.characters.length; i++) {
+		this.characters[i].drawCharacter(this.ctx);
 	}
 }
 
