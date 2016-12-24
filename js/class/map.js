@@ -11,6 +11,8 @@ function map(ctx, spritesheet, world, worldWidth, worldHeight, tileWidth, tileHe
 	this.height = worldHeight;
 	this.tileWidth = tileWidth;
 	this.tileHeight = tileHeight;
+	this.widthCase = worldWidth/tileWidth;
+	this.heightCase = worldHeight/tileHeight;
 	this.characters = new Array();
 }
 
@@ -40,7 +42,7 @@ map.prototype.draw = function()
 		}
 	}
 
-	console.log(this.characters);
+	//console.log(this.characters);
 
 	for(var i = 0; i < this.characters.length; i++) {
 		this.characters[i].drawCharacter(this.ctx);

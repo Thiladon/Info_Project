@@ -7,7 +7,7 @@ var DIRECTION = {
 
 var id = 0;
 var DUREE_ANIMATION = 4;
-var DUREE_DEPLACEMENT = 10;
+var DUREE_DEPLACEMENT = 15;
 
 function player(url, name, priority, x, y, direction) {
 	id++;
@@ -35,7 +35,7 @@ function player(url, name, priority, x, y, direction) {
 
 player.prototype.drawCharacter = function(ctx)
 {
-	console.log(this);
+	// console.log(this);
 
 	var frame = 0; // Numéro de l'image à prendre pour l'animation
 	var decalageX = 0, decalageY = 0; // Décalage à appliquer à la position du player
@@ -104,6 +104,7 @@ player.prototype.getCoordonneesAdjacentes = function(direction) {
 			coord.y--;
 			break;
 	}
+	console.log(coord);
 	return coord;
 }
 
@@ -118,9 +119,14 @@ player.prototype.deplacer = function(direction, map) {
 		
 	// On vérifie que la case demandée est bien située dans la carte
 	var prochaineCase = this.getCoordonneesAdjacentes(direction);
-	if(prochaineCase.x < 0 || prochaineCase.y < 0 || prochaineCase.x >= map.width || prochaineCase.y >= map.height) {
+	console.log("this.x :" + this.x,
+		"prochaineCase.y :" + prochaineCase.y,
+		map.map[this.x][prochaineCase.y]);
+
+	if(prochaineCase.x < 0 || prochaineCase.y < 0 || prochaineCase.x > map.width || prochaineCase.y >= map.height || map.map[prochaineCase.y][this.x] == 1 || map.map[this.y][prochaineCase.x] == 1) {
 		// On retourne un booléen indiquant que le déplacement ne s'est pas fait, 
 		// Ça ne coute pas cher et ca peut toujours servir
+		console.log("nope");
 		return false;
 	}
 	
