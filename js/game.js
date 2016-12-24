@@ -30,10 +30,65 @@ window.onload = function()
 	if(!ctx)
 		console.error('ctx is:',ctx);
 
-	level = new map(ctx, '../img/game/map_sprite.png', level[0], 18, 18, 32, 32);
-	thilladon = new player('../img/game/player.png', "Thilladon", 3, 2, DIRECTION.HAUT);
-	level.addCharacter(thilladon);
-	level.image.onload = function() { 
-		level.draw()
+	var sources = {
+		map 		: '../img/game/map_sprite.png',
+		thilladon	: '../img/game/313386.png'
+	};
+
+	loadImages(sources, function(images) {
+		thilladon = new player(images.thilladon.src, "Thilladon", 1, 1, 1, DIRECTION.BAS);
+		level = new map(ctx, images.map.src, level[0], 18, 18, 32, 32);
+		level.addCharacter(thilladon);
+		level.image.onload = function() { 
+			setInterval(function() {
+				level.draw();
+			}, 40);
+		}
+    });
+
+    // Gestion du clavier
+	window.onkeydown = function(event) {
+		var e = event || window.event;
+		var key = e.which || e.keyCode;
+		
+		switch(key) {
+			case 38 : case 122 : case 119 : case 90 : case 87 : // Flèche haut, z, w, Z, W
+				thilladon.deplacer(DIRECTION.HAUT, map);
+				break;
+			case 40 : case 115 : case 83 : // Flèche bas, s, S
+				thilladon.deplacer(DIRECTION.BAS, map);
+				break;
+			case 37 : case 113 : case 97 : case 81 : case 65 : // Flèche gauche, q, a, Q, A
+				thilladon.deplacer(DIRECTION.GAUCHE, map);
+				break;
+			case 39 : case 100 : case 68 : // Flèche droite, d, D
+				thilladon.deplacer(DIRECTION.DROITE, map);
+				break;
+			default : 
+				//alert(key);
+				// Si la touche ne nous sert pas, nous n'avons aucune raison de bloquer son comportement normal.
+				return true;
+		}
 	}
+
+}
+
+function loadImages(sources, callback) {
+    var images = {};
+    var loadedImages = 0;
+    var numImages = 0;
+    // get num of sources
+    for(var src in sources) {
+		numImages++;
+    }
+
+    for(var src in sources) {
+		images[src] = new Image();
+		images[src].onload = function() {
+    		if(++loadedImages >= numImages) {
+        		callback(images);
+        	}
+    	}
+      	images[src].src = sources[src];
+    }
 }

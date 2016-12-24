@@ -7,10 +7,11 @@ var DIRECTION = {
 
 var id = 0;
 var DUREE_ANIMATION = 4;
-var DUREE_DEPLACEMENT = 15;
+var DUREE_DEPLACEMENT = 10;
 
-function player(url,name, x, y, direction) {
+function player(url, name, priority, x, y, direction) {
 	id++;
+	this.priority = priority;
 	this.id = id;
 	this.name = name;
 	this.x = x; // (en cases)
@@ -27,7 +28,7 @@ function player(url,name, x, y, direction) {
 			throw "Erreur de chargement du sprite nommé \"" + url + "\".";
 		
 		// Taille du player
-		this.referenceDuPerso.largeur = this.width / 6;
+		this.referenceDuPerso.largeur = this.width / 4 ;
 		this.referenceDuPerso.hauteur = this.height / 4;
 	}
 }
@@ -79,12 +80,12 @@ player.prototype.drawCharacter = function(ctx)
 	
 	ctx.drawImage(
 		this.image, 
-		32, 32, // Point d'origine du rectangle source à prendre dans notre image
-		32, 32, // Taille du rectangle source (c'est la taille du player)
-		// Point de destination (dépend de la taille du player)
-		32, 32,
-		32, 32 // Taille du rectangle destination (c'est la taille du player)
+		this.largeur * frame, this.direction * this.hauteur, // Point d'origine du rectangle source à prendre dans notre image
+		this.largeur, this.hauteur, // Taille du rectangle source (c'est la taille du personnage)
+		(this.x * 32) - (this.largeur / 2) + 16 + decalageX, (this.y * 32) - this.hauteur + 24 + decalageY, // Point de destination (dépend de la taille du personnage)
+		this.largeur, this.hauteur // Taille du rectangle destination (c'est la taille du personnage)
 	);
+
 }
 
 player.prototype.getCoordonneesAdjacentes = function(direction) {
@@ -117,7 +118,7 @@ player.prototype.deplacer = function(direction, map) {
 		
 	// On vérifie que la case demandée est bien située dans la carte
 	var prochaineCase = this.getCoordonneesAdjacentes(direction);
-	if(prochaineCase.x < 0 || prochaineCase.y < 0 || prochaineCase.x >= map.getLargeur() || prochaineCase.y >= map.getHauteur()) {
+	if(prochaineCase.x < 0 || prochaineCase.y < 0 || prochaineCase.x >= map.width || prochaineCase.y >= map.height) {
 		// On retourne un booléen indiquant que le déplacement ne s'est pas fait, 
 		// Ça ne coute pas cher et ca peut toujours servir
 		return false;
