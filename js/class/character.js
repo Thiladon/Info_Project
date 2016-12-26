@@ -5,6 +5,8 @@ var DIRECTION = {
 	"HAUT"   : 3
 }
 
+var collision = [2,3];
+
 var id = 0;
 var DUREE_ANIMATION = 4;
 var DUREE_DEPLACEMENT = 15;
@@ -123,7 +125,7 @@ player.prototype.deplacer = function(direction, map) {
 		"prochaineCase.y :" + prochaineCase.y,
 		map.map[this.x][prochaineCase.y]);
 
-	if(prochaineCase.x < 0 || prochaineCase.y < 0 || prochaineCase.x > map.width || prochaineCase.y >= map.height || map.map[prochaineCase.y][this.x] == 1 || map.map[this.y][prochaineCase.x] == 1) {
+	if(prochaineCase.x < 0 || prochaineCase.y < 0 || prochaineCase.x > map.width || prochaineCase.y >= map.height || ~ collision.indexOf(parseInt(map.map[prochaineCase.y][this.x])) || ~ collision.indexOf(parseInt(map.map[this.y][prochaineCase.x]))) {
 		// On retourne un booléen indiquant que le déplacement ne s'est pas fait, 
 		// Ça ne coute pas cher et ca peut toujours servir
 		console.log("nope");

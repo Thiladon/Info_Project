@@ -1,18 +1,18 @@
+var canvas = null;
+var background = null;
+var ctx = null;
+var world = [[]];
+var worldWidth = 19;
+var worldHeight = 18;
+var tileWidth = 32;
+var tileHeight = 32;
+var pathStart = [worldWidth,worldHeight];
+var pathEnd = [0,0];
+var currentPath = [];
+
 window.onload = function()
 {
 
-	var canvas = null;
-	var ctx = null;
-	var spritesheet = null;
-	var spritesheetLoaded = false;
-	var world = [[]];
-	var worldWidth = 18;
-	var worldHeight = 18;
-	var tileWidth = 32;
-	var tileHeight = 32;
-	var pathStart = [worldWidth,worldHeight];
-	var pathEnd = [0,0];
-	var currentPath = [];
 
 // the html page is ready
 
@@ -25,19 +25,22 @@ window.onload = function()
 	if(!canvas) 
 		console.error('canvas is :',canvas);
 	
-	var ctx = canvas.getContext("2d");
+	ctx = canvas.getContext("2d");
 
 	if(!ctx)
 		console.error('ctx is:',ctx);
 
 	var sources = {
 		map 		: '../img/game/map_sprite.png',
-		thilladon	: '../img/game/313386.png'
+		thilladon	: '../img/game/character.png',
+		background	: '../img/game/background.png',
+		foreground	: '../img/game/foreground.png'
 	};
 
-	loadImages(sources, function(images) {
-		thilladon = new player(images.thilladon.src, "Thilladon", 1, 1, 1, DIRECTION.BAS);
-		level = new map(ctx, images.map.src, level[0], 18, 18, 32, 32);
+	loadImages(sources, function(images)
+	{
+		thilladon = new player(images.thilladon.src, "Thilladon", 1, 8, 8, DIRECTION.BAS);
+		level = new map(ctx, images.map.src, images.background.src, images.foreground.src, level[0], worldWidth, worldHeight, 32, 32);
 		level.addCharacter(thilladon);
 		level.image.onload = function() { 
 			Interval = setInterval(function() {
