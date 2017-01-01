@@ -1,109 +1,189 @@
+	var Key = {
+		_pressed: {},
+
+		Left: 37,
+		Up: 38,
+		Right: 39,
+		Down: 40,
+
+		isDown: function(keyCode) {
+		return this._pressed[keyCode];
+		},
+
+		onKeydown: function(event) {
+		this._pressed[event.keyCode] = true;
+		},
+
+		onKeyup: function(event) {
+		delete this._pressed[event.keyCode];
+		}
+	};
+
+	window.addEventListener('keyup', function(event) {
+		Key.onKeyup(event);
+	}, false);
+    
+    window.addEventListener('keydown', function(event) { 
+    	Key.onKeydown(event);
+	    console.log(event);
+	}, false);
+
+// Inclusion des class.
+
+include([
+	'../js/class/game.js',
+	'../js/class/player.js',
+	'../js/class/level.js'
+]);
+
+var Game;
+
+var renderStats = new Stats();
+var updateStats = new Stats();
+
+renderStats.domElement.style.position = 'absolute';
+renderStats.domElement.style.right = '0px';
+renderStats.domElement.style.top = '0px';
+
+updateStats.domElement.style.position = 'absolute';
+updateStats.domElement.style.right = '0px';
+updateStats.domElement.style.top = '50px';
+
+document.body.appendChild(renderStats.domElement);
+document.body.appendChild(updateStats.domElement);
+
 /*
-
- 	On défini la fonction parallax basé sur les mouvements de la souris,
-	quand celle-ci se trouve au dessus du document
-
+	var pathStart = [worldWidth,worldHeight];
+	var pathEnd = [0,0];
+	var currentPath = [];		
 */
 
-$(document).on('mousemove ready resize', function(event){
-	var count		= 0.1,
-		axeX		= event.pageX,
-		axeY		= event.pageY,
-		strength	= 1,
-		container	= $('.parallax-container');
+window.onload = function()
+{
 
-	container.children().each(function(){
-		pos = container.offset();
 
-		var newPosX = (axeX - pos.left - (container.width()/2)) * strength * count * -1 - $(this).width()/2 + container.width()/2;
-		$(this).css({ 'left': newPosX + 'px' });
-		var newPosY = (axeY - pos.top - (container.height()/2)) * strength * count * -1 - $(this).height()/2 + container.height()/2;
-		$(this).css({ 'top': newPosY + 'px' });
+/*	var onEachFrame;
+        
+    if (window.webkitRequestAnimationFrame) {
+      onEachFrame = function(cb) {
+        var _cb = function() { cb(); webkitRequestAnimationFrame(_cb); }
+        _cb();
+      };
+    } else if (window.mozRequestAnimationFrame) {
+      onEachFrame = function(cb) {
+        var _cb = function() { cb(); mozRequestAnimationFrame(_cb); }
+        _cb();
+      };
+    } else {
+      onEachFrame = function(cb) {
+        setInterval(cb, 1000 / 60);
+      }
+    }
+    
+    window.onEachFrame = onEachFrame;*/
 
-		// console.log(
-		// 	"count : ", count,
-		// 	"\nstrength", strength,
-		// 	"\naxeX :", axeX,
-		// 	"\npos.left :", pos.left,
-		// 	"\ncontainer.width() :", container.width(),
-		// 	"\n$(this.width) :", $(this).width(),
-		// 	"\n$newPosX :", newPosX, "px",
-		// 	"\naxeY :", axeY,
-		// 	"\npos.top :", pos.top,
-		// 	"\ncontainer.height() :", container.height(),
-		// 	"\n$(this.height) :", $(this).height(),
-		// 	"\n$newPosY :", newPosY, "px"
-		// )
+// La page html est chargée.
 
-		count++;
-	});
-})
+
+	var sources = {
+		map 		: '../img/game/map_sprite.png',
+		webspider	: '../img/game/webspider.png',
+		user		: '../img/game/character.png',
+		fly			: '../img/game/fly.png',
+		background	: '../img/game/background.png',
+		foreground	: '../img/game/foreground.png'
+	};
+
+	loadImages(sources, function(images)
+	{
+		canvas = document.getElementById('canvas');
+		canvas.width = 19 * 32;
+		canvas.height = 18 * 32;
+
+		Game = new Game();
+		Game.init(canvas, 50, images.background.src, images.map.src, images.webspider.src, images.foreground.src, level[0], 19, 18, 32, 32);
+		player = new character(images.user.src, Game.ctx, "Thilladon", 8, 8, Direction.Down);
+		entity = new character(images.fly.src, Game.ctx, "", 7, 7, Direction.Down);
+		Game.addCharacters(entity);
+		Game.addCharacters(player);
+
+      	Game._onEachFrame(Game.run());
+    });
+}
+
 
 /*
 
-	Ensuite on viens créer la fonction diaporama :
 
-	- On défini l'ordre des images de façon aléatoire à chaque rechargement de la page (*1)
-	- On en profite pour définir l'animation + le chargement Ajax de la page principal au click du .bouton (*2)
-	- On appelle ensuite la fonction diaporama qui viendras changer d'image toutes les 3s. (*3)
+window.onload = function()
+{
 
 
-*/
+// the html page is ready
 
-var images = 0,
-	tableau = [0,0,0],
-	element = $('.parallax div'),
-	j = tableau.length;
-
-
-$(document).ready(function() {
-	// (*1) : 
+	console.log('Page loaded.');
 	
-	for (var i = 0; i < tableau.length ; i++) {
+	canvas = document.getElementById('canvas');
+	canvas.width = worldWidth * tileWidth;
+	canvas.height = worldHeight * tileHeight;
+	
+	if(!canvas) 
+		console.error('canvas is :',canvas);
+	
+	ctx = canvas.getContext("2d");
 
-		var button 	= $('.button'),
-		div		= $('.button div');
+	if(!ctx)
+		console.error('ctx is:',ctx);
 
-	    var randomNumber = Math.floor(Math.random() * 3) + 1;
 
-	    while(j >= 0) {
-	       	if(tableau[j] == randomNumber) {
-	       		randomNumber = Math.floor(Math.random() * 3) + 1;
-	       		j = tableau.length;
-	       	}
 
-	       	j--;
-	    }
+	
 
-	    tableau[i] = randomNumber;
+    // Gestion du clavier
+	window.onkeydown = function(event) {
+		var e = event || window.event;
+		var key = e.which || e.keyCode;
+		/*clearInterval(Interval);
+
+		switch(key) {
+			case 38 : case 122 : case 119 : case 90 : case 87 : // Flèche haut, z, w, Z, W
+				player.deplacer(DIRECTION.HAUT, level);
+				break;
+			case 40 : case 115 : case 83 : // Flèche bas, s, S
+				player.deplacer(DIRECTION.BAS, level);
+				break;
+			case 37 : case 113 : case 97 : case 81 : case 65 : // Flèche gauche, q, a, Q, A
+				player.deplacer(DIRECTION.GAUCHE, level);
+				break;
+			case 39 : case 100 : case 68 : // Flèche droite, d, D
+				player.deplacer(DIRECTION.DROITE, level);
+				break;
+			default : 
+				//alert(key);
+				// Si la touche ne nous sert pas, nous n'avons aucune raison de bloquer son comportement normal.
+				return true;
+		}
 	}
 
-	// (*2) :
-
-	$('.button').click(function(){
-		$('.button p').css("display", "none");
-		button.addClass('animate-0');
-		div.addClass('animate-0');
-		setTimeout(function() { button.addClass('animate-1')}, 200);
-		setTimeout(function() { button.addClass('animate-2')}, 300);
-		setTimeout(function() { button.addClass('animate-3')}, 600);
-		setTimeout(function() { div.addClass('animate-3')}, 600);
-		setTimeout(function() { button.addClass('animate-4')}, 900);
-		setTimeout(function() { div.addClass('animate-4')}, 900);
-	});
-
-	element.css("background-image", "url('img/welcome_home_wallpaper_" + tableau[images] + ".jpg'");
-
-	// (*3) :
-
-	interval = setInterval("diaporama()", 4000);
-})
-
-function diaporama(){
-	element.css("background-image", "url('img/welcome_home_wallpaper_" + tableau[images] + ".jpg'");
-	
-	images++;
-	
-	if(images>2)
-		images = 0;
 }
+*/
+function loadImages(sources, callback) {
+    var images = {};
+    var loadedImages = 0;
+    var numImages = 0;
+    // get num of sources
+    for(var src in sources) {
+		numImages++;
+    }
+
+    for(var src in sources) {
+		images[src] = new Image();
+		images[src].onload = function() {
+    		if(++loadedImages >= numImages) {
+        		callback(images);
+        	}
+    	}
+      	images[src].src = sources[src];
+    }
+}
+//

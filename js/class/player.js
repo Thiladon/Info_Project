@@ -1,19 +1,18 @@
-var DIRECTION = {
-	"BAS"    : 0,
-	"GAUCHE" : 1,
-	"DROITE" : 2,
-	"HAUT"   : 3
+var Direction = {
+	Down: 0,
+	Left: 1,
+	Right: 2,
+	Up: 3
 }
 
 var collision = [2,3];
 
 var id = 0;
-var DUREE_ANIMATION = 4;
-var DUREE_DEPLACEMENT = 15;
+var DUREE_ANIMATION = 6;
+var DUREE_DEPLACEMENT = 30;
 
-function character(url, ctx, name, priority, x, y, direction) {
+function character(url, ctx, name, x, y, direction) {
 	id++;
-	this.priority = priority;
 	this.id = id;
 	this.ctx = ctx;
 	this.name = name;
@@ -26,7 +25,8 @@ function character(url, ctx, name, priority, x, y, direction) {
 	this.image = new Image();
 	this.image.referenceDuPerso = this;
 	this.image.src = url;
-	this.image.onload = function() {
+	this.image.onload = function
+	() {
 		if(!this.complete) 
 			throw "Erreur de chargement du sprite nommé \"" + url + "\".";
 		
@@ -36,9 +36,24 @@ function character(url, ctx, name, priority, x, y, direction) {
 	}
 }
 
-character.prototype.update = function()
+
+character.prototype.update = function(entity)
 {
-	// console.log(this);
+
+	if(this.id == 1 )
+	{
+		if (Key.isDown(Key.Up)) this.move(Direction.Up, entity);
+		if (Key.isDown(Key.Left)) this.move(Direction.Left, entity);
+		if (Key.isDown(Key.Down)) this.move(Direction.Down, entity);
+		if (Key.isDown(Key.Right)) this.move(Direction.Right, entity);
+
+		//console.log(this);
+
+	}
+	else
+	{
+		this._iaUpdate();
+	}
 
 	this._frame = 0; // Numéro de l'image à prendre pour l'animation
 	this._decalageX = 0, this._decalageY = 0; // Décalage à appliquer à la position du player
@@ -62,13 +77,13 @@ character.prototype.update = function()
 		var pixelsAParcourir = 32 - (32 * (this.etatAnimation / DUREE_DEPLACEMENT));
 		
 		// À partir de ce nombre, on définit le décalage en x et y.
-		if(this.direction == DIRECTION.HAUT) {
+		if(this.direction == Direction.Up) {
 			this._decalageY = pixelsAParcourir;
-		} else if(this.direction == DIRECTION.BAS) {
+		} else if(this.direction == Direction.Down) {
 			this._decalageY = -pixelsAParcourir;
-		} else if(this.direction == DIRECTION.GAUCHE) {
+		} else if(this.direction == Direction.Left) {
 			this._decalageX = pixelsAParcourir;
-		} else if(this.direction == DIRECTION.DROITE) {
+		} else if(this.direction == Direction.Right) {
 			this._decalageX = -pixelsAParcourir;
 		}
 		
@@ -80,11 +95,12 @@ character.prototype.update = function()
 	 * donc il nous suffit de garder les valeurs 0 pour les variables 
 	 * frame, decalageX et decalageY
 	 */
+
 	this.draw();
 }
 
-character.prototype.draw = function()
-{
+character.prototype.draw = function() {
+	//console.log(this.direction);
 	this.ctx.drawImage(
 		this.image, 
 		this.largeur * this._frame, this.direction * this.hauteur, // Point d'origine du rectangle source à prendre dans notre image
@@ -97,20 +113,20 @@ character.prototype.draw = function()
 character.prototype.getCoordonneesAdjacentes = function(direction) {
 	var coord = {'x' : this.x, 'y' : this.y};
 	switch(direction) {
-		case DIRECTION.BAS : 
+		case Direction.Down : 
 			coord.y++;
 			break;
-		case DIRECTION.GAUCHE : 
+		case Direction.Left : 
 			coord.x--;
 			break;
-		case DIRECTION.DROITE : 
+		case Direction.Right : 
 			coord.x++;
 			break;
-		case DIRECTION.HAUT : 
+		case Direction.Up : 
 			coord.y--;
 			break;
 	}
-	console.log(coord);
+	// console.log(coord);
 	return coord;
 }
 
@@ -122,12 +138,10 @@ character.prototype.move = function(direction, map) {
 
 	// On change la direction du player
 	this.direction = direction;
-		
+	
 	// On vérifie que la case demandée est bien située dans la carte
 	var prochaineCase = this.getCoordonneesAdjacentes(direction);
-	console.log("this.x :" + this.x,
-		"prochaineCase.y :" + prochaineCase.y,
-		map.map[this.x][prochaineCase.y]);
+	// console.log(map);
 
 	if(prochaineCase.x < 0 || prochaineCase.y < 0 || prochaineCase.x > map.width || prochaineCase.y >= map.height || ~ collision.indexOf(parseInt(map.map[prochaineCase.y][this.x])) || ~ collision.indexOf(parseInt(map.map[this.y][prochaineCase.x]))) {
 		// On retourne un booléen indiquant que le déplacement ne s'est pas fait, 
@@ -144,4 +158,8 @@ character.prototype.move = function(direction, map) {
 	this.y = prochaineCase.y;
 		
 	return true;
+}
+
+character.prototype._iaUpdate = function() {
+	console.log("ia");
 }
