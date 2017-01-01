@@ -40,6 +40,7 @@ Game.prototype.init = function(canvas, fps, background, ground, imageWeb, foregr
 	this.widthCase = worldWidth/tileWidth;
 	this.heightCase = worldHeight/tileHeight;
 	this.characters = new Array();
+	this.pathStart = [worldWidth,worldHeight];
 }
 
 Game.prototype.addCharacters = function(chara){

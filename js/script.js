@@ -1,32 +1,38 @@
-	var Key = {
-		_pressed: {},
+var Key = {
+	_pressed: {},
 
-		Left: 37,
-		Up: 38,
-		Right: 39,
-		Down: 40,
+	Left: 37,
+	Up: 38,
+	Right: 39,
+	Down: 40,
 
-		isDown: function(keyCode) {
-		return this._pressed[keyCode];
-		},
+	isDown: function(keyCode) {
+	return this._pressed[keyCode];
+	},
 
-		onKeydown: function(event) {
-		this._pressed[event.keyCode] = true;
-		},
+	onKeydown: function(event) {
+	this._pressed[event.keyCode] = true;
+	},
 
-		onKeyup: function(event) {
-		delete this._pressed[event.keyCode];
-		}
-	};
+	onKeyup: function(event) {
+	delete this._pressed[event.keyCode];
+	}
+};
 
-	window.addEventListener('keyup', function(event) {
-		Key.onKeyup(event);
-	}, false);
-    
-    window.addEventListener('keydown', function(event) { 
-    	Key.onKeydown(event);
-	    console.log(event);
-	}, false);
+window.addEventListener('keyup', function(event) {
+	Key.onKeyup(event);
+}, false);
+
+window.addEventListener('keydown', function(event) { 
+	Key.onKeydown(event);
+    console.log(event);
+}, false);
+
+
+// start and end of path
+var pathStart = [];
+var pathEnd = [0,0];
+var currentPath = [];
 
 // Inclusion des class.
 
@@ -61,28 +67,7 @@ document.body.appendChild(updateStats.domElement);
 window.onload = function()
 {
 
-
-/*	var onEachFrame;
-        
-    if (window.webkitRequestAnimationFrame) {
-      onEachFrame = function(cb) {
-        var _cb = function() { cb(); webkitRequestAnimationFrame(_cb); }
-        _cb();
-      };
-    } else if (window.mozRequestAnimationFrame) {
-      onEachFrame = function(cb) {
-        var _cb = function() { cb(); mozRequestAnimationFrame(_cb); }
-        _cb();
-      };
-    } else {
-      onEachFrame = function(cb) {
-        setInterval(cb, 1000 / 60);
-      }
-    }
-    
-    window.onEachFrame = onEachFrame;*/
-
-// La page html est chargée.
+	// La page html est chargée.
 
 
 	var sources = {
