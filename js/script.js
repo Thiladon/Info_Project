@@ -1,68 +1,53 @@
-var Key = {
-	_pressed: {},
+$('#gameButton').click(function(e)
+{
+	e.preventDefault();
 
-	Left: 37,
-	Up: 38,
-	Right: 39,
-	Down: 40,
+	$('#infoGame').animate({
+	    opacity: 0
+	}, 500, function() {
+	    display : "none"
+	});
 
-	isDown: function(keyCode) {
-	return this._pressed[keyCode];
-	},
-
-	onKeydown: function(event) {
-	this._pressed[event.keyCode] = true;
-	},
-
-	onKeyup: function(event) {
-	delete this._pressed[event.keyCode];
+	if(Arachnea.runInit == 0) {
+		Arachnea.runInit++;
+		Arachnea._onEachFrame(Arachnea.run(Arachnea));
 	}
-};
 
-window.addEventListener('keyup', function(event) {
-	Key.onKeyup(event);
-}, false);
+	if(Arachnea.break == 3 && Arachnea.runInit == 1)
+	{
+		level_count = Arachnea._levelCount
 
-window.addEventListener('keydown', function(event) { 
-	Key.onKeydown(event);
-    console.log(event);
-}, false);
+		switch(Arachnea._levelCount + 1)
+		{
+			case 2: case 3: case 4: case 5:
+				clearInterval(Arachnea.EntityInverval);
+				Arachnea.init(canvas, 50, images.background.src, images.map.src, images.webspider.src, images.foreground.src, images.scoreBoard.src, level[0], _level, 19, 18, 32, 32);
+				Arachnea.addCharacters(new character(images.user.src, Arachnea.ctx, "player", 1, 8, 8, Direction.Down));
+				Arachnea._levelCount = level_count;
+				Arachnea.EntityInverval = setInterval(function()
+				{
+					Arachnea.addCharacters(new character(images.fly.src, Arachnea.ctx, "", 1, Math.floor(Math.random()*Arachnea.width), 0, Direction.Down));
+				}, Arachnea.level[Arachnea._levelCount][1]);
+				Arachnea.break = 0;
+				break;
 
-
-// start and end of path
-var pathStart = [];
-var pathEnd = [0,0];
-var currentPath = [];
-
-// Inclusion des class.
-
-include([
-	'../js/class/game.js',
-	'../js/class/player.js',
-	'../js/class/level.js'
-]);
-
-var Game;
-
-var renderStats = new Stats();
-var updateStats = new Stats();
-
-renderStats.domElement.style.position = 'absolute';
-renderStats.domElement.style.right = '0px';
-renderStats.domElement.style.top = '0px';
-
-updateStats.domElement.style.position = 'absolute';
-updateStats.domElement.style.right = '0px';
-updateStats.domElement.style.top = '50px';
-
-document.body.appendChild(renderStats.domElement);
-document.body.appendChild(updateStats.domElement);
-
-/*
-	var pathStart = [worldWidth,worldHeight];
-	var pathEnd = [0,0];
-	var currentPath = [];		
-*/
+			default:
+				id = 0;
+				clearInterval(Arachnea.EntityInverval);
+				Arachnea.init(canvas, 50, images.background.src, images.map.src, images.webspider.src, images.foreground.src, images.scoreBoard.src, level[0], _level, 19, 18, 32, 32);
+				Arachnea.addCharacters(new character(images.user.src, Arachnea.ctx, "player", 1, 8, 8, Direction.Down));
+				Arachnea.EntityInverval = setInterval(function()
+				{
+					Arachnea.addCharacters(new character(images.fly.src, Arachnea.ctx, "", 1, Math.floor(Math.random()*Arachnea.width), 0, Direction.Down));
+				}, Arachnea.level[Arachnea._levelCount][1]);
+				Arachnea.break = 0;
+				break;
+		}
+	} else if (Arachnea.break == 4 && Arachnea.runInit == 1){
+		console.log("test");
+		Arachnea.break = 0;
+	}
+});
 
 window.onload = function()
 {
@@ -76,7 +61,8 @@ window.onload = function()
 		user		: '../img/game/character.png',
 		fly			: '../img/game/fly.png',
 		background	: '../img/game/background.png',
-		foreground	: '../img/game/foreground.png'
+		foreground	: '../img/game/foreground.png',
+		scoreBoard	: '../img/game/score_Board.png'
 	};
 
 	loadImages(sources, function(images)
@@ -85,14 +71,9 @@ window.onload = function()
 		canvas.width = 19 * 32;
 		canvas.height = 18 * 32;
 
-		Game = new Game();
-		Game.init(canvas, 50, images.background.src, images.map.src, images.webspider.src, images.foreground.src, level[0], 19, 18, 32, 32);
-		player = new character(images.user.src, Game.ctx, "Thilladon", 8, 8, Direction.Down);
-		entity = new character(images.fly.src, Game.ctx, "", 7, 7, Direction.Down);
-		Game.addCharacters(entity);
-		Game.addCharacters(player);
-
-      	Game._onEachFrame(Game.run());
+		Arachnea = new Game();
+		Arachnea.init(canvas, 50, images.background.src, images.map.src, images.webspider.src, images.foreground.src, images.scoreBoard.src, level[0], _level, 19, 18, 32, 32);
+		Arachnea.addCharacters(new character(images.user.src, Arachnea.ctx, "player", 1, 8, 8, Direction.Down));
     });
 }
 
@@ -153,7 +134,6 @@ window.onload = function()
 }
 */
 function loadImages(sources, callback) {
-    var images = {};
     var loadedImages = 0;
     var numImages = 0;
     // get num of sources

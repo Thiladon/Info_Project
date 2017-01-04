@@ -18,19 +18,7 @@
 
 			<ul id="nav">
 				<li>
-					<a href="#scroll_container-1">Acceuil</a>
-				</li>
-				
-				<li>
-					<a href="#scroll_container-2">Biologie</a>
-				</li>
-				
-				<li>
-					<a href="#scroll_container-3">Nourriture</a>
-				</li>
-
-				<li>
-					<a href="#scroll_container-4">Galerie</a>
+					<a href="main_page.html" id="main_page">Retour au site</a>
 				</li>
 			</ul>
 		</header>
@@ -38,13 +26,28 @@
 			<div class="scroll_container container row" id="scroll_container-1">
 				<canvas id="canvas">Si vous voyez ce message, c'est que votre navigateur n'est pas compatible avec la balise <\canvas><\/canvas></canvas>
 			</div>
+			<div class="container row" id="infoGame">
+				<div class="card">
+					    <div class="card-content">
+					      <span class="card-title activator">Arachnea Game</span>
+					      <p>Bienvenue sur notre mini-jeu ! Le concept est simple, il suffit de se déplacer avec les flèches (Echap pour faire pause) et de manger les mouches qui seront sur votre toiles (Attention, celle ci s'en vous après un certains temps)</p>
+					    </div>
+					    <div class="card-action">
+					    	<a href="#" id="gameButton">Commencer</a>
+					    </div>
+					</div>
+				</div>
+			</div>
 		</main>
 
 		<div id="nav-overlay"></div>
 		<!-- JavaScript en fin de Body pour un chargement plus rapide. -->
 
 		<script type="text/javascript" src="../js/jquery-2.2.0.js"></script>
-		<script type="text/javascript" src="../js/include.js"></script>
+		<script type="text/javascript" src="../js/class/game.js"></script>
+		<script type="text/javascript" src="../js/class/player.js"></script>
+		<script type="text/javascript" src="../js/class/level.js"></script>
 		<script type="text/javascript" src="../js/script.js"></script>
+		<script type="text/javascript" src="../js/menu.js"></script>
 	</body>
 </html>

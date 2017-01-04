@@ -90,6 +90,7 @@ $(document).ready(function() {
 		setTimeout(function() { div.addClass('animate-3')}, 600);
 		setTimeout(function() { button.addClass('animate-4')}, 900);
 		setTimeout(function() { div.addClass('animate-4')}, 900);
+		setTimeout(function() { document.location.href="html/main_page.html" }, 1200);
 	});
 
 	element.css("background-image", "url('img/welcome_home_wallpaper_" + tableau[images] + ".jpg'");

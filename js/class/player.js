@@ -2,7 +2,8 @@ var Direction = {
 	Down: 0,
 	Left: 1,
 	Right: 2,
-	Up: 3
+	Up: 3,
+	Fixed: 4
 }
 
 var collision = [2,3];
@@ -11,15 +12,38 @@ var id = 0;
 var DUREE_ANIMATION = 6;
 var DUREE_DEPLACEMENT = 30;
 
-function character(url, ctx, name, x, y, direction) {
+function character(url, ctx, name, priority, x, y, direction) {
 	id++;
-	this.id = id;
 	this.ctx = ctx;
 	this.name = name;
+	this.etatAnimation = -1;
+	if(this.name == "player")
+	{
+		this.id = 1;
+	} else {
+		this.id = id;	
+	}
+	this.priority = priority;
 	this.x = x; // (en cases)
 	this.y = y; // (en cases)
 	this.direction = direction;
 	this.etatAnimation = -1;
+	this.pathStart = [];
+	currentPath = [];
+	this.objectPhase = 1;
+	if(this.id !== 1) {
+		this.pathEnd = [Math.floor(Math.random()*Arachnea.width),Math.floor(Math.random()*Arachnea.height)];
+		while(Arachnea.map[this.pathEnd[1]][this.pathEnd[0]] != 1.1) {
+			this.pathEnd = [Math.floor(Math.random()*Arachnea.width),Math.floor(Math.random()*Arachnea.height)];
+		}
+	}
+
+	/*while (currentPath.length == 0)
+	{
+		if (parseFloat(Arachnea.map[this.pathStart[0]][this.pathStart[1]]) == 1.1)
+			currentPath = findPath(world,pathStart,pathEnd);
+	}*/
+
 	
 	// Chargement de l'image dans l'attribut image
 	this.image = new Image();
@@ -31,28 +55,40 @@ function character(url, ctx, name, x, y, direction) {
 			throw "Erreur de chargement du sprite nommé \"" + url + "\".";
 		
 		// Taille du player
-		this.referenceDuPerso.largeur = this.width / 4 ;
+		this.referenceDuPerso.largeur = this.width / (this.width / 32) ;
 		this.referenceDuPerso.hauteur = this.height / 4;
 	}
 }
 
 
-character.prototype.update = function(entity)
+character.prototype.update = function(entity, i)
 {
 
 	if(this.id == 1 )
 	{
-		if (Key.isDown(Key.Up)) this.move(Direction.Up, entity);
-		if (Key.isDown(Key.Left)) this.move(Direction.Left, entity);
-		if (Key.isDown(Key.Down)) this.move(Direction.Down, entity);
-		if (Key.isDown(Key.Right)) this.move(Direction.Right, entity);
+		if (Key.isDown(Key.Up)) this.move(Direction.Up);
+		if (Key.isDown(Key.Left)) this.move(Direction.Left);
+		if (Key.isDown(Key.Down)) this.move(Direction.Down);
+		if (Key.isDown(Key.Right)) this.move(Direction.Right);
+		if (Key.isDown(Key.Echap)) Arachnea.break = 1;
+
+		var element = this;
+
+		Arachnea.characters.forEach(function(e)
+		{
+			if(e.id != 1 && e.x == element.x && e.y == element.y && e.objectPhase == 2 && element._frame == 3) {
+				Arachnea.characters.splice(Arachnea.characters.indexOf(e), 1);
+				
+				Arachnea._count++;
+			}
+		})
 
 		//console.log(this);
 
 	}
 	else
 	{
-		this._iaUpdate(entity);
+		this._iaUpdate(entity, i);
 	}
 
 	this._frame = 0; // Numéro de l'image à prendre pour l'animation
@@ -130,7 +166,7 @@ character.prototype.getCoordonneesAdjacentes = function(direction) {
 	return coord;
 }
 
-character.prototype.move = function(direction, map) {
+character.prototype.move = function(direction) {
 	// On ne peut pas se déplacer si un mouvement est déjà en cours !
 	if(this.etatAnimation >= 0) {
 		return false;
@@ -141,15 +177,15 @@ character.prototype.move = function(direction, map) {
 	
 	// On vérifie que la case demandée est bien située dans la carte
 	var prochaineCase = this.getCoordonneesAdjacentes(direction);
-	// console.log(map);
 
-	if(prochaineCase.x < 0 || prochaineCase.y < 0 || prochaineCase.x > map.width || prochaineCase.y >= map.height || ~ collision.indexOf(parseInt(map.map[prochaineCase.y][this.x])) || ~ collision.indexOf(parseInt(map.map[this.y][prochaineCase.x]))) {
-		// On retourne un booléen indiquant que le déplacement ne s'est pas fait, 
-		// Ça ne coute pas cher et ca peut toujours servir
-		console.log("nope");
-		return false;
+	if(this.id == 1 ) {
+		if(prochaineCase.x < 0 || prochaineCase.y < 0 || prochaineCase.x > Arachnea.width || prochaineCase.y >= Arachnea.height || ~ collision.indexOf(parseInt(Arachnea.map[prochaineCase.y][this.x])) || ~ collision.indexOf(parseInt(Arachnea.map[this.y][prochaineCase.x]))) {
+			// On retourne un booléen indiquant que le déplacement ne s'est pas fait, 
+			// Ça ne coute pas cher et ca peut toujours servir
+			console.log("nope");
+			return false;
+		}
 	}
-	
 	// On commence l'animation
 	this.etatAnimation = 1;
 		
@@ -160,18 +196,90 @@ character.prototype.move = function(direction, map) {
 	return true;
 }
 
-character.prototype._iaUpdate = function(parent)
+character.prototype._iaUpdate = function(i)
 {
-	pathStart = [this.x, this.y];
-	pathEnd = [Math.floor(Math.random()*parent.width),Math.floor(Math.random()*parent.height)];
-
 	// calculate path
-	currentPath = this.findPath(parent, pathStart, pathEnd);
-	console.log(currentPath);
-	// redraw();
+	this.pathStart[0] = this.x;
+	this.pathStart[1] = this.y;
+
+	currentPath = this.findPath(this);
+
+	if (currentPath[1]) {
+		switch(currentPath[1][0] - this.x)
+		{
+			case -1:
+				this.move(Direction.Left, Arachnea);
+				break;
+
+			case 1:
+				this.move(Direction.Right, Arachnea);
+				break;
+
+			default:
+				break;
+		}
+
+			switch(currentPath[1][1] - this.y)
+		{
+			case -1:
+				this.move(Direction.Up, Arachnea);
+				break;
+
+			case 1:
+				this.move(Direction.Down, Arachnea);
+				break;
+
+			default:
+				break;
+		}
+	} else {
+		if(this.etatAnimation == -1) {
+			if(this.objectPhase == 6 && this.x == this.pathEnd[0] && this.pathEnd[1] == -1 && this.y == -1)
+			{
+				console.log("Phase : 5");
+				Arachnea.characters.splice(i, 1);
+				this.objectPhase++;
+			}
+
+			if(this.objectPhase == 5 && this.x == this.pathEnd[0] && this.pathEnd[1] == -1 && this.y == 0)
+			{
+				console.log("Phase : 4");
+				var movement = this.move(Direction.Up, Arachnea);
+				if(movement == true)
+					this.objectPhase++;
+			}
+
+			if(this.objectPhase == 4 && this.x == this.pathEnd[0] && this.y == 0)
+			{
+				this.pathEnd[1] = -1;
+				console.log(this.pathEnd[1]);
+				this.objectPhase++;
+			}
+
+			if(this.objectPhase == 3) {
+				this.pathEnd = [Math.floor(Math.random()*Arachnea.width), 0]
+				this.objectPhase++;
+			}
+
+			if(this.objectPhase == 2 && ((new Date).getTime() - this.timeTemp)/1000 >= 4 )
+			{
+				console.log("Phase : 2");
+				this.pathStart = [this.x, this.y];
+				console.log(this);
+				this.objectPhase++;
+			}
+
+			if(this.objectPhase == 1)
+			{
+				console.log("Phase : 1");
+				this.timeTemp = (new Date).getTime();
+				this.objectPhase++;
+			}
+		}
+	}
 }
 
-character.prototype.findPath = function(parent, pathStart, pathEnd)
+character.prototype.findPath = function(entity)
 {
 	// shortcuts for speed
 	var	abs = Math.abs;
@@ -183,23 +291,23 @@ character.prototype.findPath = function(parent, pathStart, pathEnd)
 	// anything higher than this number is considered blocked
 	// this is handy is you use numbered sprites, more than one
 	// of which is walkable road, grass, mud, etc
-	var maxWalkableTileNum = 0;
+	var maxWalkableTileNum = 99;
 
 	// keep track of the world dimensions
     // Note that this A-star implementation expects the world array to be square: 
-	// it must have equal height and width. If your game world is rectangular, 
+	// it must have equal height and width. If your Arachnea world is rectangular, 
 	// just fill the array with dummy values to pad the empty space.
 
-	var worldSize =	parent.width * parent.height;
+	var worldSize =	Arachnea.width * Arachnea.height;
 
 	// which heuristic should we use?
 	// default: no diagonals (Manhattan)
-	var distanceFunction = ManhattanDistance;
-	var findNeighbours = function(){}; // empty
+	var distanceFunction = DiagonalDistance;
+	var findNeighbours = DiagonalNeighbours; // empty
 
 	/*
 
-	// alternate heuristics, depending on your game:
+	// alternate heuristics, depending on your Arachnea:
 
 	// diagonals allowed but no sqeezing through cracks:
 	var distanceFunction = DiagonalDistance;
@@ -251,10 +359,10 @@ character.prototype.findPath = function(parent, pathStart, pathEnd)
 		S = y + 1,
 		E = x + 1,
 		W = x - 1,
-		myN = N > -1 && canWalkHere(x, N),
-		myS = S < parent.height && canWalkHere(x, S),
-		myE = E < parent.width && canWalkHere(E, y),
-		myW = W > -1 && canWalkHere(W, y),
+		myN = N > -1,
+		myS = S < Arachnea.height,
+		myE = E < Arachnea.width,
+		myW = W > -1,
 		result = [];
 		if(myN)
 		result.push({x:x, y:N});
@@ -275,16 +383,16 @@ character.prototype.findPath = function(parent, pathStart, pathEnd)
 	{
 		if(myN)
 		{
-			if(myE && canWalkHere(E, N))
+			if(myE)
 			result.push({x:E, y:N});
-			if(myW && canWalkHere(W, N))
+			if(myW)
 			result.push({x:W, y:N});
 		}
 		if(myS)
 		{
-			if(myE && canWalkHere(E, S))
+			if(myE)
 			result.push({x:E, y:S});
-			if(myW && canWalkHere(W, S))
+			if(myW)
 			result.push({x:W, y:S});
 		}
 	}
@@ -295,32 +403,26 @@ character.prototype.findPath = function(parent, pathStart, pathEnd)
 	function DiagonalNeighboursFree(myN, myS, myE, myW, N, S, E, W, result)
 	{
 		myN = N > -1;
-		myS = S < worldHeight;
-		myE = E < parent.width;
+		myS = S < Arachnea.height;
+		myE = E < Arachnea.width;
 		myW = W > -1;
 		if(myE)
 		{
-			if(myN && canWalkHere(E, N))
+			if(myN)
 			result.push({x:E, y:N});
-			if(myS && canWalkHere(E, S))
+			if(myS)
 			result.push({x:E, y:S});
 		}
 		if(myW)
 		{
-			if(myN && canWalkHere(W, N))
+			if(myN)
 			result.push({x:W, y:N});
-			if(myS && canWalkHere(W, S))
+			if(myS)
 			result.push({x:W, y:S});
 		}
 	}
 
 	// returns boolean value (world cell is available and open)
-	function canWalkHere(x, y)
-	{
-		return ((parent.map[x] != null) &&
-			(parent.map[x][y] != null) &&
-			(parent.map[x][y] <= maxWalkableTileNum));
-	};
 
 	// Node function, returns a new object with Node properties
 	// Used in the calculatePath function to store route costs, etc.
@@ -330,7 +432,7 @@ character.prototype.findPath = function(parent, pathStart, pathEnd)
 			// pointer to another Node object
 			Parent:Parent,
 			// array index of this Node in the world linear array
-			value:Point.x + (Point.y * parent.worldWidth),
+			value:Point.x + (Point.y * Arachnea.width),
 			// the location coordinates of this Node
 			x:Point.x,
 			y:Point.y,
@@ -341,16 +443,16 @@ character.prototype.findPath = function(parent, pathStart, pathEnd)
 			// from the starting point to this node
 			g:0
 		};
-
+		
 		return newNode;
 	}
 
 	// Path function, executes AStar algorithm operations
-	function calculatePath()
+	function calculatePath(entity)
 	{
 		// create Nodes from the Start and End x,y coordinates
-		var	mypathStart = Node(null, {x:pathStart[0], y:pathStart[1]});
-		var mypathEnd = Node(null, {x:pathEnd[0], y:pathEnd[1]});
+		var	mypathStart = Node(null, {x:entity.pathStart[0], y:entity.pathStart[1]});
+		var mypathEnd = Node(null, {x:entity.pathEnd[0], y:entity.pathEnd[1]});
 
 		// create an array that will contain all world cells
 		var AStar = new Array(worldSize);
@@ -370,10 +472,11 @@ character.prototype.findPath = function(parent, pathStart, pathEnd)
 		var length, max, min, i, j;
 		// iterate through the open list until none are left
 
-		console.log(length, Open.length);
+		// console.log(length, Open.length);
 
 		while(length = Open.length)
 		{
+
 			max = worldSize;
 			min = -1;
 			for(i = 0; i < length; i++)
@@ -387,6 +490,7 @@ character.prototype.findPath = function(parent, pathStart, pathEnd)
 			// grab the next node and remove it from Open array
 			myNode = Open.splice(min, 1)[0];
 			// is it the destination node?
+
 			if(myNode.value === mypathEnd.value)
 			{
 				myPath = Closed[Closed.push(myNode) - 1];
@@ -424,13 +528,14 @@ character.prototype.findPath = function(parent, pathStart, pathEnd)
 				Closed.push(myNode);
 			}
 		} // keep iterating until the Open list is empty
+
 		return result;
 	}
 
 	// actually calculate the a-star path!
 	// this returns an array of coordinates
 	// that is empty if no path is possible
-	return calculatePath();
+	return calculatePath(entity);
 
 } // end of findPath() function
 

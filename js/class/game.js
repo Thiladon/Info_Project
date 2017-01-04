@@ -1,4 +1,103 @@
+var Key = {
+	_pressed: {},
+
+	Left: 37,
+	Up: 38,
+	Right: 39,
+	Down: 40,
+	Echap : 27,
+
+	isDown: function(keyCode) {
+	return this._pressed[keyCode];
+	},
+
+	onKeydown: function(event) {
+	this._pressed[event.keyCode] = true;
+	},
+
+	onKeyup: function(event) {
+	delete this._pressed[event.keyCode];
+	}
+};
+
+window.addEventListener('keyup', function(event) {
+	Key.onKeyup(event);
+}, false);
+
+window.addEventListener('keydown', function(event) { 
+	Key.onKeydown(event);
+}, false);
+
+var DIRECTION = {
+	"BAS"    : 0,
+	"GAUCHE" : 1,
+	"DROITE" : 2,
+	"HAUT"   : 3
+}
+
+var collision = [2,3];
+var Arachnea = null;
+var id = 0;
+var DUREE_ANIMATION = 4;
+var DUREE_DEPLACEMENT = 15;
+
 var _id = 0;
+var level = [];
+var images = {};
+var _level = [[3,2500],[6,2500],[10,2000],[15,1000],[25,750]];
+
+// start and end of path
+var pathStart = [];
+var pathEnd = [0,0];
+var currentPath = [];
+
+var debug = 1;
+
+// Inclusion des class.
+
+var renderStats = new Stats();
+var updateStats = new Stats();
+
+renderStats.domElement.style.position = 'absolute';
+renderStats.domElement.style.right = '0px';
+renderStats.domElement.style.top = '0px';
+
+updateStats.domElement.style.position = 'absolute';
+updateStats.domElement.style.right = '0px';
+updateStats.domElement.style.top = '50px';
+
+document.body.appendChild(renderStats.domElement);
+document.body.appendChild(updateStats.domElement);
+
+function showGameButton()
+{
+	$('#infoGame').animate({
+	    opacity: 1
+	}, 500, function() {
+	    display : "block"
+	});
+
+	if(Arachnea.break == 3) {
+		switch(Arachnea._levelCount + 1) {
+			case 2 : case 3 : case 4 : case 5 :
+				$('#infoGame .card .card-content .card-title').html("Vous avez fini le niveau : " + Arachnea._levelCount - 1);
+				$('#infoGame .card .card-content p').html("En cliquant sur le bouton ci dessous, vous lancerez le niveau suivant");
+				$('#infoGame .card .card-action a').html("Continuer");
+				break;
+
+			default :
+				$('#infoGame .card .card-content .card-title').innerText = "Vous avez fini le jeu !";
+				$('#infoGame .card .card-content p').innerText = "Félicitation ! Vous avez terminer notre mini jeu ! En cliquant ci dessous, vous relancerez le jeu encore une fois";
+				$('#infoGame .card .card-action a').innerText = "Recommencer";
+				break;		
+
+		}
+	} else {
+		$('#infoGame .card .card-content .card-title').html("/!\\ PAUSE /!\\");
+		$('#infoGame .card .card-content p').html("En cliquant sur le bouton ci dessous, vous relancerez le jeu");
+		$('#infoGame .card .card-action a').html("Reprendre");
+	}
+}
 
 function Game() {}
 
@@ -17,21 +116,30 @@ Game.prototype._onEachFrame = (function() {
 	  }
 	})();
 
-Game.prototype.init = function(canvas, fps, background, ground, imageWeb, foreground, world, worldWidth, worldHeight, tileWidth, tileHeight)
+Game.prototype.init = function(canvas, fps, background, ground, imageWeb, foreground, scoreBoard, world, level, worldWidth, worldHeight, tileWidth, tileHeight)
 {
+	_id++;
+	this.id = _id;
+	this._count = 0;
+	this.break = 0;
+	
+	this.runInit = 0;
+	this.level = level;
+	this._levelCount = 0;
 	this.ctx = canvas.getContext("2d");
 	this.background = background;
 	this.fps = fps;
-	_id++;
-	this.id = _id;
+	this.timeStart = (new Date).getTime();
 	this.background = new Image();
 	this.ground = new Image();
 	this.web = new Image();
 	this.foreground = new Image();
+	this.scoreBoard = new Image();
 	this.background.src = background;
 	this.ground.src = ground;
 	this.web.src = imageWeb;
 	this.foreground.src = foreground;
+	this.scoreBoard.src = scoreBoard;
 	this.map = world;
 	this.width = worldWidth;
 	this.height = worldHeight;
@@ -44,7 +152,8 @@ Game.prototype.init = function(canvas, fps, background, ground, imageWeb, foregr
 }
 
 Game.prototype.addCharacters = function(chara){
-	this.characters.push(chara);
+	if(this.break == 0)
+		this.characters.push(chara);
 }
 
 
@@ -67,6 +176,16 @@ Game.prototype.drawMap = function()
 			}
 		}
 	}
+
+	// Mise à jour du compteur :
+
+	this.ctx.drawImage(this.scoreBoard, canvas.width - 135, canvas.height - 41);
+	this.ctx.font = "32px serif";
+	this.ctx.fillStyle = "white";
+	this.ctx.fillText(this._count, canvas.width - (135 - 44/2), canvas.height - 14);
+	this.ctx.fillText(this.level[this._levelCount][0], canvas.width - (135 - 44*2), canvas.height - 14);
+
+
 	//console.log(this.characters);
 
 	this.update();
@@ -102,28 +221,52 @@ Game.prototype.drawFunction = function(spriteNum, x, y, num)
 	}
 }
 
-Game.prototype.run = function() {
-	var loops = 0, skipTicks = 1000 / Game.fps,
+Game.prototype.run = function(entity)
+{
+	loops = 0, skipTicks = 1000 / this.fps,
 
 	maxFrameSkip = 10,
 	nextGameTick = (new Date).getTime();
-	var entity = this;
-	console.log(this);
 
-	return function() {
-				loops = 0;
-		while ((new Date).getTime() > nextGameTick) {
-			updateStats.update();
-			entity.update(entity);
-			nextGameTick += skipTicks;
-			loops++;
-		}
+	entity.EntityInverval = setInterval(function()
+	{
+		entity.addCharacters(new character(images.fly.src, Arachnea.ctx, "", 1, Math.floor(Math.random()*Arachnea.width), 0, Direction.Down));
+	}, entity.level[entity._levelCount][1]);
 
-		if(loops)
-		{
-			renderStats.update();
-			entity.drawMap(entity);
-		}
+	return function()
+	{
+			loops = 0;
+			while ((new Date).getTime() > nextGameTick)
+			{
+				if(entity.break === 0) {;
+					updateStats.update(); // Mise à jour des statitiques en background
+					entity.update(entity);
+				
+					loops++;
+				}
+
+				if(!loops && entity.break === 1) {
+					Arachnea.break = 4;
+					showGameButton();
+				}
+
+				if(!loops && entity.break === 2) {
+					Arachnea.drawMap(Arachnea);
+					Arachnea.break = 3;
+					Arachnea._levelCount++;
+					
+					showGameButton();
+				}
+				nextGameTick += skipTicks;
+			}
+
+
+			if(loops)
+			{
+				renderStats.update(); // Mise a jour des statistiques visuelles.
+				if(entity.break === 0)
+					entity.drawMap();
+			}
 	};
 }
 
@@ -137,15 +280,43 @@ Game.prototype.getInf = function()
 
 Game.prototype.update = function(entity)
 {
+	this.characters.forEach(function(element)
+	{
+		if(element.id != 1) {
+			if(element.objectPhase == 2) {
+				element.priority = 2;
+			}
+			else {
+				element.priority = 0;
+			}
+		}
+	})
+
 	this.characters.sort(function(a, b){
-		return b.id - a.id;
+		return b.priority - a.priority;
 	});
+
+	var i = 0;
 
 	this.characters.forEach(function(element)
 	{
 		// console.log(Game);
-		element.update(Game);
+		element.update(i);
+		i++;
 	});
+
+
+	if(this._count == this.level[this._levelCount][0]) {
+		this.characters.forEach(function(e){
+			if(e.id == 1) {
+				Arachnea.characters = [e];
+				Arachnea.characters[0].x = 8, Arachnea.characters[0].y = 8, Arachnea.characters[0].direction = 0, Arachnea.characters[0].frame = 0, Arachnea.characters[0].etatAnimation = -1;
+				console.log(Arachnea.characters[0]);
+			}
+		});
+
+		Arachnea.break = 2;
+	}
 }
 
 Game.prototype.draw = function(type, image, spriteNum, x, y) {
