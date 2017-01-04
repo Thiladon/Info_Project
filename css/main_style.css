@@ -54,8 +54,7 @@
 
 	/* Menu */
 
-		header {
-			overflow-y: scroll; 	
+		header {	
 			position: fixed;
 			z-index: 999;
 			top: 0;
@@ -87,8 +86,7 @@
 		}
 
 		ul#nav {
-			height: calc(100% - 35px);
-			padding-top: 70px;
+			padding: 59px 0;
 		}
 
 		#nav li:hover {
