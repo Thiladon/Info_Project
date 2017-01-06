@@ -54,7 +54,7 @@
 
 	/* Menu */
 
-		header {	
+		header {
 			position: fixed;
 			z-index: 999;
 			top: 0;
@@ -75,7 +75,7 @@
 			left: 0;
 			transition: all 0.3s;
 		}
-		
+
 		#menu i {
 			height: 100%;
 			width: 100%;
@@ -92,7 +92,7 @@
 		#nav li:hover {
 			background-color: #ddd;
 		}
-		
+
 		#nav li {
 			float: none;
 			padding: 0 15px;
@@ -149,9 +149,17 @@
 		}
 
 		/* Contenu des containers */
-			
+
+			.scroll_container .row {
+				position: relative;
+			}
+
 			#scroll_container-1 {
 				margin: 0;
+			}
+
+			#scroll_container-1 .row {
+				top: calc(50% - 306px);
 			}
 
 			#scroll_container-1 h4 {
@@ -178,25 +186,30 @@
 				color: rgba(0, 0, 0, 0.87);
 			}
 
-		#scroll_container-2 .row {
-			margin-top: 80px;
-		}
+			#scroll_container-2 .row {
+				top: calc(50% - 237px);
+			}
 
-		#container-3-title {
-			margin-top: 50px;
-		}
+			#scroll_container-3 .row {
+				top: calc(50% - (528.875px/2));
+			}
 
-		#container-3-choices {
-			margin-top: 30px;
-		}
+			#container-3-choices {
+				margin-top: 30px;
+			}
 
-		#scroll_container-4 {
-			overflow: hidden;
-		}
+			#scroll_container-4 {
+				overflow: hidden;
+			}
 
-		#scroll_container-4 >.row>.col {
+			#scroll_container-4 .row {
+				position: relative;
+    		top: calc(50% - 270.5px);
+			}
+
+			#scroll_container-4 >.row>.col {
 		    margin-left: 5% !important;
-		}
+			}
 
 /* Design des pages */
 
@@ -245,11 +258,6 @@
     		line-height: 1.3;
 		}
 
-		#scroll_container-4 .row {
-			position: relative;
-    		top: calc(50% - 270.5px);
-		}
-
 		#scroll_container-4 .row .col .card .card-image {
 			overflow: hidden;
 			top: -80px;
@@ -293,7 +301,7 @@
 			width: 100%;
 			height: 304px;
 		}
-		
+
 		.waves-effect img {
 			position: relative;
 			z-index: -1;
@@ -338,7 +346,7 @@
 			-ms-flex-positive: 1;
 			flex-grow: 1;
 		}
-		
+
 		.card-panel {
 			transition: box-shadow .25s;
 			padding: 20px;
@@ -381,7 +389,7 @@
 		    top: 100%;
 		    height: 100%;
 		    z-index: 3;
-		    display: none;	
+		    display: none;
 		}
 
 		.card .card-content .card-title {
@@ -844,7 +852,7 @@
 			.container {
 				width: 85%;
 			}
-			
+
 		}
 
 	/* Grilles */
