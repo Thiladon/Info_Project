@@ -20,41 +20,24 @@ var Key = {
 	}
 };
 
-window.addEventListener('keyup', function(event) {
-	Key.onKeyup(event);
-}, false);
-
-window.addEventListener('keydown', function(event) { 
-	Key.onKeydown(event);
-}, false);
-
-var DIRECTION = {
-	"BAS"    : 0,
-	"GAUCHE" : 1,
-	"DROITE" : 2,
-	"HAUT"   : 3
+var Direction = {
+	Down: 0,
+	Left: 1,
+	Right: 2,
+	Up: 3
 }
 
+var runInit = 0;
 var collision = [2,3];
-var Arachnea = null;
-var id = 0;
-var DUREE_ANIMATION = 4;
-var DUREE_DEPLACEMENT = 15;
-
 var _id = 0;
-var level = [];
+var DUREE_ANIMATION = 6;
+var DUREE_DEPLACEMENT = 30;
 var images = {};
-var _level = [[3,2500],[6,2500],[10,2000],[15,1000],[25,750]];
-
-// start and end of path
+var level = [];
+var _level = [[3,2500,3000],[6,2500,3000],[10,2000,2000],[15,1500,2000],[25,1500,1000]];
 var pathStart = [];
 var pathEnd = [0,0];
 var currentPath = [];
-
-var debug = 1;
-
-// Inclusion des class.
-
 var renderStats = new Stats();
 var updateStats = new Stats();
 
@@ -69,6 +52,14 @@ updateStats.domElement.style.top = '50px';
 document.body.appendChild(renderStats.domElement);
 document.body.appendChild(updateStats.domElement);
 
+window.addEventListener('keyup', function(event) {
+	Key.onKeyup(event);
+}, false);
+
+window.addEventListener('keydown', function(event) { 
+	Key.onKeydown(event);
+}, false);
+
 function showGameButton()
 {
 	$('#infoGame').animate({
@@ -79,7 +70,7 @@ function showGameButton()
 
 	if(Arachnea.break == 3) {
 		switch(Arachnea._levelCount + 1) {
-			case 2 : case 3 : case 4 : case 5 :
+			case 2 : case 3 : case 4 :
 				$('#infoGame .card .card-content .card-title').html("Vous avez fini le niveau : " + Arachnea._levelCount - 1);
 				$('#infoGame .card .card-content p').html("En cliquant sur le bouton ci dessous, vous lancerez le niveau suivant");
 				$('#infoGame .card .card-action a').html("Continuer");
@@ -98,3 +89,54 @@ function showGameButton()
 		$('#infoGame .card .card-action a').html("Reprendre");
 	}
 }
+
+$('#gameButton').click(function(e)
+{
+	e.preventDefault();
+
+	$('#infoGame').animate({
+	    opacity: 0
+	}, 500, function() {
+	    display : "none"
+	});
+
+	if(runInit == 0) {
+		runInit++;
+		Arachnea._onEachFrame(Arachnea.run(Arachnea));
+	} else {
+		if(Arachnea.break == 3)
+		{
+			level_count = Arachnea._levelCount
+
+			switch(Arachnea._levelCount + 1)
+			{
+				case 2: case 3: case 4: case 5:
+					clearInterval(Arachnea.EntityInverval);
+					Arachnea.init(canvas, 50, images.background.src, images.map.src, images.webspider.src, images.foreground.src, images.scoreBoard.src, level[0], _level, 19, 18, 32, 32);
+					Arachnea.addCharacters(new character(images.user.src, Arachnea.ctx, "player", 1, 8, 8, Direction.Down));
+					Arachnea._levelCount = level_count;
+					Arachnea.EntityInverval = setInterval(function()
+					{
+						Arachnea.addCharacters(new character(images.fly.src, Arachnea.ctx, "", 1, Math.floor(Math.random()*Arachnea.width), 0, Direction.Down));
+					}, Arachnea.level[Arachnea._levelCount][1]);
+					Arachnea.break = 0;
+					break;
+
+				default:
+					id = 0;
+					clearInterval(Arachnea.EntityInverval);
+					Arachnea.init(canvas, 50, images.background.src, images.map.src, images.webspider.src, images.foreground.src, images.scoreBoard.src, level[0], _level, 19, 18, 32, 32);
+					Arachnea.addCharacters(new character(images.user.src, Arachnea.ctx, "player", 1, 8, 8, Direction.Down));
+					Arachnea.EntityInverval = setInterval(function()
+					{
+						Arachnea.addCharacters(new character(images.fly.src, Arachnea.ctx, "", 1, Math.floor(Math.random()*Arachnea.width), 0, Direction.Down));
+					}, Arachnea.level[Arachnea._levelCount][1]);
+					Arachnea.break = 0;
+					break;
+			}
+		} else if (Arachnea.break == 4 && Arachnea.runInit == 1){
+			console.log("test");
+			Arachnea.break = 0;
+		}
+	}
+});

@@ -261,7 +261,7 @@ character.prototype._iaUpdate = function(i)
 				this.objectPhase++;
 			}
 
-			if(this.objectPhase == 2 && ((new Date).getTime() - this.timeTemp)/1000 >= 4 )
+			if(this.objectPhase == 2 && ((new Date).getTime() - this.timeTemp) >=  Arachnea.level[Arachnea._levelCount][2])
 			{
 				console.log("Phase : 2");
 				this.pathStart = [this.x, this.y];

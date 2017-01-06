@@ -1,19 +1,19 @@
 function Game() {}
 
 Game.prototype._onEachFrame = (function() {
-	  var requestAnimationFrame = window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+	var requestAnimationFrame = window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
 
-	  if (requestAnimationFrame) {
-	   return function(cb) {
-		  var _cb = function() { cb(); requestAnimationFrame(_cb); }
-		  _cb();
-		};
-	  } else {
+	if (requestAnimationFrame) {
 		return function(cb) {
-		  setInterval(cb, 1000 / Game.fps);
+			var _cb = function() { cb(); requestAnimationFrame(_cb); }
+			_cb();
+		};
+	} else {
+		return function(cb) {
+			setInterval(cb, 1000 / Game.fps);
 		}
-	  }
-	})();
+	}
+})();
 
 Game.prototype.init = function(canvas, fps, background, ground, imageWeb, foreground, scoreBoard, world, level, worldWidth, worldHeight, tileWidth, tileHeight)
 {
@@ -134,13 +134,13 @@ Game.prototype.run = function(entity)
 
 	return function()
 	{
-			loops = 0;
-			while ((new Date).getTime() > nextGameTick)
-			{
-				if(entity.break === 0) {;
+		loops = 0;
+		while ((new Date).getTime() > nextGameTick)
+		{
+			if(entity.break === 0) {;
 					updateStats.update(); // Mise à jour des statitiques en background
 					entity.update(entity);
-				
+					
 					loops++;
 				}
 
@@ -166,81 +166,81 @@ Game.prototype.run = function(entity)
 				if(entity.break === 0)
 					entity.drawMap();
 			}
-	};
-}
+		};
+	}
 
-Game.prototype.getInf = function()
-{
-	console.log(this.map);
-	console.log(this.ctx);
-	console.log(this.image);
-	console.log(this.length);
-}
-
-Game.prototype.update = function(entity)
-{
-	this.characters.forEach(function(element)
+	Game.prototype.getInf = function()
 	{
-		if(element.id != 1) {
-			if(element.objectPhase == 2) {
-				element.priority = 2;
-			}
-			else {
-				element.priority = 0;
-			}
-		}
-	})
+		console.log(this.map);
+		console.log(this.ctx);
+		console.log(this.image);
+		console.log(this.length);
+	}
 
-	this.characters.sort(function(a, b){
-		return b.priority - a.priority;
-	});
-
-	var i = 0;
-
-	this.characters.forEach(function(element)
+	Game.prototype.update = function(entity)
 	{
+		this.characters.forEach(function(element)
+		{
+			if(element.id != 1) {
+				if(element.objectPhase == 2) {
+					element.priority = 2;
+				}
+				else {
+					element.priority = 0;
+				}
+			}
+		})
+
+		this.characters.sort(function(a, b){
+			return b.priority - a.priority;
+		});
+
+		var i = 0;
+
+		this.characters.forEach(function(element)
+		{
 		// console.log(Game);
 		element.update(i);
 		i++;
 	});
 
 
-	if(this._count == this.level[this._levelCount][0]) {
-		this.characters.forEach(function(e){
-			if(e.id == 1) {
-				Arachnea.characters = [e];
-				Arachnea.characters[0].x = 8, Arachnea.characters[0].y = 8, Arachnea.characters[0].direction = 0, Arachnea.characters[0].frame = 0, Arachnea.characters[0].etatAnimation = -1;
-				console.log(Arachnea.characters[0]);
-			}
-		});
+		if(this._count == this.level[this._levelCount][0]) {
+			this.characters.forEach(function(e){
+				if(e.id == 1) {
+					Arachnea.characters = [e];
+					Arachnea.characters[0].x = 8, Arachnea.characters[0].y = 8, Arachnea.characters[0].direction = 0, Arachnea.characters[0].frame = 0, Arachnea.characters[0].etatAnimation = -1;
+					console.log(Arachnea.characters[0]);
+				}
+			});
 
-		Arachnea.break = 2;
+			Arachnea.break = 2;
+		}
 	}
-}
 
-Game.prototype.draw = function(type, image, spriteNum, x, y) {
-	if(type == "int")
-		this.ctx.drawImage(image,
-		parseInt(spriteNum)*this.tileWidth, 0,
-		this.tileWidth, this.tileHeight,
-		x*this.tileWidth, y*this.tileHeight,
-		this.tileWidth, this.tileHeight);
+	Game.prototype.draw = function(type, image, spriteNum, x, y) {
+		if(type == "int")
+			this.ctx.drawImage(image,
+				parseInt(spriteNum)*this.tileWidth, 0,
+				this.tileWidth, this.tileHeight,
+				x*this.tileWidth, y*this.tileHeight,
+				this.tileWidth, this.tileHeight);
 
-	if(type == "float")
-		this.ctx.drawImage(image,
-		parseInt((((spriteNum - (parseInt(spriteNum) - 0.01))*1000)/100) - 1)*this.tileWidth, 0,
-		this.tileWidth, this.tileHeight,
-		x*this.tileWidth, y*this.tileHeight,
-		this.tileWidth, this.tileHeight);
-}
+		if(type == "float")
+			this.ctx.drawImage(image,
+				parseInt((((spriteNum - (parseInt(spriteNum) - 0.01))*1000)/100) - 1)*this.tileWidth, 0,
+				this.tileWidth, this.tileHeight,
+				x*this.tileWidth, y*this.tileHeight,
+				this.tileWidth, this.tileHeight);
+	}
 
 
-function isIntFloat(number)
-{
-	if(parseInt(number) != parseFloat(number)) {
-		return "float";
-	} else 
+	function isIntFloat(number)
 	{
-		return "int";
+		if(parseInt(number) != parseFloat(number)) {
+			return "float";
+		} else 
+		{
+			return "int";
+		}
 	}
-}
